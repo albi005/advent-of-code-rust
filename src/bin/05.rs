@@ -53,8 +53,111 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some(result.try_into().unwrap())
 }
 
+fn get_min(
+    first: i64,
+    last: i64,
+    maps: &Vec<Vec<MapOption>>,
+    layer: usize,
+    checked_options: usize,
+) -> i64 {
+    if layer == maps.len() {
+        return first;
+    };
+
+    let map = &maps[layer];
+
+    let first = first;
+    let last = last;
+
+    for (i, opt) in map.iter().enumerate().skip(checked_options) {
+        //   ----
+        // --
+        if opt.first > last {
+            continue;
+        }
+
+        //   ----
+        //       --
+        if opt.last < first {
+            continue;
+        }
+
+        //   ----
+        //    --
+        if opt.first > first && opt.last < last {
+            return get_min(first, opt.last - 1, maps, layer, i + 1)
+                .min(get_min(
+                    opt.first + opt.delta,
+                    opt.last + opt.delta,
+                    maps,
+                    layer + 1,
+                    0,
+                ))
+                .min(get_min(opt.last + 1, last, maps, layer, i + 1));
+        }
+
+        //   ----
+        //  --
+        if opt.last < last {
+            return get_min(first + opt.delta, opt.last + opt.delta, maps, layer + 1, 0)
+                .min(get_min(opt.last + 1, last, maps, layer, i + 1));
+        }
+
+        //   ----
+        //      --
+        if opt.last < last {
+            return get_min(first, opt.first - 1, maps, layer, i + 1).min(get_min(
+                opt.first + opt.delta,
+                last + opt.delta,
+                maps,
+                layer + 1,
+                0,
+            ));
+        }
+
+        //   ----
+        //  ------
+        return get_min(first + opt.delta, last + opt.delta, maps, layer + 1, 0);
+    }
+
+    get_min(first, last, maps, layer + 1, 0)
+}
+
 pub fn part_two(input: &str) -> Option<u32> {
-    None
+    let lines: Vec<_> = input.lines().collect();
+    let mut seeds = lines[0][7..]
+        .split(' ')
+        .map(|s| s.parse::<i64>().unwrap());
+
+    let maps: Vec<Vec<MapOption>> = input
+        .split("\n\n")
+        .map(|s| {
+            s.lines()
+                .skip(1)
+                .map(|line| {
+                    let mut parts = line.split(' ').map(|s| s.parse::<i64>().unwrap());
+                    let dest_start = parts.next().unwrap();
+                    let src_start = parts.next().unwrap();
+                    let len = parts.next().unwrap();
+
+                    let first = src_start;
+                    let last = src_start + len - 1;
+                    let delta = dest_start - src_start;
+                    MapOption { first, last, delta }
+                })
+                .collect()
+        })
+        .collect();
+
+    let mut min = maps.last().unwrap().first().unwrap().first; // did u say something?
+
+    while let Some(first) = seeds.next() {
+        let last = seeds.next().unwrap();
+        min = get_min(first, last, &maps, 0, 0)
+            .min(min);
+    }
+
+    Some(min as u32)
 }
 
 #[cfg(test)]
