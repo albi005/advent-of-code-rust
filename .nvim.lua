@@ -1,17 +1,21 @@
 local dap = require('dap')
 
+local vscode_lldb_path = os.getenv'VSCODE_LLDB_PATH'
+if vscode_lldb_path == nil then
+    print('VSCODE_LLDB_PATH not set')
+    return
+end
+
 dap.configurations.rust = {
     {
         name = "Run Rust program",
-        type = "cppdbg",
+        type = "codelldb",
+        sourceLanguages = { "rust" },
         request = "launch",
         program = function()
-            return '${workspaceFolder}/target/debug/01'
+            return '${workspaceFolder}/target/debug/02'
         end,
         cwd = function ()
-            -- if string.find(vim.fn.expand('%'), 'nhf') then
-            --     return '${workspaceFolder}/nhf'
-            -- end
             return '${workspaceFolder}'
         end,
         stopAtEntry = false,
@@ -25,10 +29,16 @@ dap.configurations.rust = {
     },
 }
 
-dap.adapters.cppdbg = {
-    id = 'cppdbg',
-    type = 'executable',
-    command = os.getenv'OPEN_DEBUG_PATH',
+dap.adapters.codelldb = {
+  type = 'server',
+  port = "${port}",
+  executable = {
+    command = vscode_lldb_path .. '/share/vscode/extensions/vadimcn.vscode-lldb/adapter/codelldb',
+    args = {"--port", "${port}"},
+
+    -- On windows you may have to uncomment this:
+    -- detached = false,
+  }
 }
 
 -- compile and run, pass in input if it exists

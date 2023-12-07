@@ -1,25 +1,31 @@
 advent_of_code::solution!(1);
 
 pub fn part_one(input: &str) -> Option<u32> {
-    Some(input
-        .lines()
-        .map(|line| {
-            let mut first: u32 = 10;
-            let mut last: u32 = 10;
-            for c in line.chars() {
-                if let Some(digit) = c.to_digit(10) {
-                    if first == 10 { first = digit }
-                    last = digit;
+    Some(
+        input
+            .lines()
+            .map(|line| {
+                let mut first: u32 = 10;
+                let mut last: u32 = 10;
+                for c in line.chars() {
+                    if let Some(digit) = c.to_digit(10) {
+                        if first == 10 {
+                            first = digit
+                        }
+                        last = digit;
+                    }
                 }
-            }
 
-            10 * first + last
-        })
-        .sum())
+                10 * first + last
+            })
+            .sum(),
+    )
 }
 
 fn to_digit(s: &str) -> Option<u32> {
-    const DIGITS: [&str; 9] = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+    const DIGITS: [&str; 9] = [
+        "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+    ];
     for (i, digit) in DIGITS.iter().enumerate() {
         if s.starts_with(digit) {
             return Some((i + 1).try_into().unwrap());
@@ -29,25 +35,30 @@ fn to_digit(s: &str) -> Option<u32> {
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    Some(input
-        .lines()
-        .map(|line| {
-            let mut first: u32 = 10;
-            let mut last: u32 = 10;
-            for (i, c) in line.chars().enumerate() {
-                if let Some(digit) = c.to_digit(10) {
-                    if first == 10 { first = digit };
-                    last = digit;
+    Some(
+        input
+            .lines()
+            .map(|line| {
+                let mut first: u32 = 10;
+                let mut last: u32 = 10;
+                for (i, c) in line.chars().enumerate() {
+                    if let Some(digit) = c.to_digit(10) {
+                        if first == 10 {
+                            first = digit
+                        };
+                        last = digit;
+                    } else if let Some(digit) = to_digit(&line[i..]) {
+                        if first == 10 {
+                            first = digit
+                        };
+                        last = digit;
+                    }
                 }
-                else if let Some(digit) = to_digit(&line[i..]) {
-                    if first == 10 { first = digit };
-                    last = digit;
-                }
-            }
 
-            10 * first + last
-        })
-        .sum())
+                10 * first + last
+            })
+            .sum(),
+    )
 }
 
 #[cfg(test)]

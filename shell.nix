@@ -19,7 +19,7 @@
     shellHook = ''
       export PATH=$PATH:''${CARGO_HOME:-~/.cargo}/bin
       export PATH=$PATH:''${RUSTUP_HOME:-~/.rustup}/toolchains/$RUSTC_VERSION-x86_64-unknown-linux-gnu/bin/
-      export OPEN_DEBUG_PATH=${pkgs.vscode-extensions.ms-vscode.cpptools}/share/vscode/extensions/ms-vscode.cpptools/debugAdapters/bin/OpenDebugAD7;
+      export VSCODE_LLDB_PATH=${pkgs.vscode-extensions.vadimcn.vscode-lldb};
       '';
     # Add precompiled library to rustc search path
     RUSTFLAGS = (builtins.map (a: ''-L ${a}/lib'') [
