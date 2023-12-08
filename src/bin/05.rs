@@ -71,13 +71,13 @@ fn get_min(
 
     for (i, opt) in map.iter().enumerate().skip(checked_options) {
         //   ----
-        // --
+        //       --
         if opt.first > last {
             continue;
         }
 
         //   ----
-        //       --
+        // --
         if opt.last < first {
             continue;
         }
@@ -85,7 +85,7 @@ fn get_min(
         //   ----
         //    --
         if opt.first > first && opt.last < last {
-            return get_min(first, opt.last - 1, maps, layer, i + 1)
+            return get_min(first, opt.first - 1, maps, layer, i + 1)
                 .min(get_min(
                     opt.first + opt.delta,
                     opt.last + opt.delta,
@@ -105,7 +105,7 @@ fn get_min(
 
         //   ----
         //      --
-        if opt.last < last {
+        if opt.first > first {
             return get_min(first, opt.first - 1, maps, layer, i + 1).min(get_min(
                 opt.first + opt.delta,
                 last + opt.delta,
@@ -125,9 +125,7 @@ fn get_min(
 
 pub fn part_two(input: &str) -> Option<u32> {
     let lines: Vec<_> = input.lines().collect();
-    let mut seeds = lines[0][7..]
-        .split(' ')
-        .map(|s| s.parse::<i64>().unwrap());
+    let mut seeds = lines[0][7..].split(' ').map(|s| s.parse::<i64>().unwrap());
 
     let maps: Vec<Vec<MapOption>> = input
         .split("\n\n")
@@ -149,12 +147,11 @@ pub fn part_two(input: &str) -> Option<u32> {
         })
         .collect();
 
-    let mut min = maps.last().unwrap().first().unwrap().first; // did u say something?
+    let mut min = maps.last().unwrap().first().unwrap().first;
 
     while let Some(first) = seeds.next() {
-        let last = seeds.next().unwrap();
-        min = get_min(first, last, &maps, 0, 0)
-            .min(min);
+        let len = seeds.next().unwrap();
+        min = get_min(first, first + len - 1, &maps, 0, 0).min(min);
     }
 
     Some(min as u32)
