@@ -12,6 +12,7 @@
         rust-analyzer
         pkg-config
         openssl
+        aoc-cli
     ];
     RUSTC_VERSION = pkgs.lib.readFile ./rust-toolchain;
     # https://github.com/rust-lang/rust-bindgen#environment-variables
