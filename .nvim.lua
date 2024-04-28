@@ -13,7 +13,7 @@ dap.configurations.rust = {
         sourceLanguages = { "rust" },
         request = "launch",
         program = function()
-            return '${workspaceFolder}/target/debug/07'
+            return '${workspaceFolder}/target/debug/08'
         end,
         cwd = function ()
             return '${workspaceFolder}'
